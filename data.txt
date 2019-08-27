@@ -1,5 +1,5 @@
 - path: urls
   name: urls
-  rows: 984
+  rows: 100
   cols: 3
   type: table
