@@ -1,0 +1,10 @@
+path:
+- data.csv
+- data.rds
+rows: 100
+cols: 3
+columns:
+  source: character
+  search: character
+  url: character
+type: table
