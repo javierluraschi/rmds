@@ -34,8 +34,6 @@ github_fetch_urls <- function(term) {
     content <- httr::content(result)
     urls <- c(urls, sapply(content$items, function(e) e$url))
 
-    github_update_urls(term, urls)
-
     Sys.sleep(max_poll)
 
     if (result$headers$`x-ratelimit-remaining` <= 0) {
@@ -48,6 +46,8 @@ github_fetch_urls <- function(term) {
       message("Done!")
     }
   }
+
+  github_update_urls(term, urls)
 }
 
 github_update_urls <- function(term, urls) {
@@ -61,7 +61,7 @@ github_update_urls <- function(term, urls) {
     index_old <- pins::pin_get("urls", board = "rmds")
   }
 
-  index_new <- unique(rbind(index_new, index_new))
+  index_new <- unique(rbind(index_old, index_new))
 
   pins::pin(index_new, "urls", board = "rmds")
 }
