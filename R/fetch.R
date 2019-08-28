@@ -4,9 +4,11 @@
 #' \code{pins} package under an \code{rmds} board.
 #'
 #' @export
-rmds_fetch <- function(term = "sparklyr") {
-  if (!"rmds" %in% pins::board_list())
-    pins::board_register("github", "rmds", repo = "javierluraschi/rmds", branch = "datasets")
+rmds_fetch <- function(terms = "sparklyr", board = "rmds") {
+  if (!board %in% pins::board_list())
+    pins::board_register("github", board, repo = "javierluraschi/rmds", branch = "datasets")
 
-  github_fetch_urls(term)
+  for (term in terms) {
+    github_fetch_urls(term, board)
+  }
 }

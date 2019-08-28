@@ -2,7 +2,7 @@ github_headers <- function(board) {
   httr::add_headers(Authorization = paste("token", Sys.getenv("GITHUB_PAT")))
 }
 
-github_fetch_urls <- function(term) {
+github_fetch_urls <- function(term, board) {
 
   response <- httr::GET(paste0("https://api.github.com/search/code?q=extension%3ARmd+", term, "&per_page=100"), github_headers())
   headers <- httr::headers(response)
@@ -47,21 +47,21 @@ github_fetch_urls <- function(term) {
     }
   }
 
-  github_update_urls(term, urls)
+  github_update_urls(term, urls, board)
 }
 
-github_update_urls <- function(term, urls) {
+github_update_urls <- function(term, urls, board) {
   index_new <- data.frame(source = "github",
                           search = term,
                           url = urls,
                           stringsAsFactors = FALSE)
 
   index_old <- NULL
-  if ("urls" %in% pins::pin_find(board = "rmds")$name) {
-    index_old <- pins::pin_get("urls", board = "rmds")
+  if ("urls" %in% pins::pin_find(board = board)$name) {
+    index_old <- pins::pin_get("urls", board = board)
   }
 
   index_new <- unique(rbind(index_old, index_new))
 
-  pins::pin(index_new, "urls", board = "rmds")
+  pins::pin(index_new, "urls", board = board)
 }
