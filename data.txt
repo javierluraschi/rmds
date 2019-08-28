@@ -3,3 +3,8 @@
   rows: 6827
   cols: 3
   type: table
+- path: iris
+  name: iris
+  rows: 150
+  cols: 5
+  type: table
