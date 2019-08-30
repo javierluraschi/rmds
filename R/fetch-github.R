@@ -3,6 +3,7 @@ github_headers <- function(board) {
 }
 
 github_fetch_urls <- function(term, board) {
+  message("Processing ", term)
 
   response <- httr::GET(paste0("https://api.github.com/search/code?q=extension%3ARmd+", term, "&per_page=100"), github_headers())
   headers <- httr::headers(response)

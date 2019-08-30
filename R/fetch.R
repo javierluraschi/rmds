@@ -4,11 +4,25 @@
 #'
 #' @export
 rmds_terms <- function() {
-  c("keras", "dplyr", "tidyverse", "readr", "caret",
-    "DBI", "odbc", "foreign", "tidyr", "lubridte",
+  c("tensorflow", "sparklyr", "keras", "dplyr", "tidyverse",
+    "readr", "caret", "DBI", "odbc", "foreign", "tidyr", "lubridte",
     "ggplot2", "car", "mgcv", "glmnet", "survival",
     "shiny", "zoo", "data.table", "parallel", "jsonlite",
     "httr")
+}
+
+#' Initialize Rmds
+#'
+#' Initializes the boards required to fetch and process Rmds.
+#'
+#' @export
+rmds_init <- function(board = "rmds") {
+  if (!board %in% pins::board_list())
+    pins::board_register("github", board, repo = "javierluraschi/rmds", branch = "datasets")
+}
+
+rmds_validate <- function(board) {
+  if (!board %in% pins::board_list()) stop("Boards not initialized run rmds_init()")
 }
 
 #' Fetch Rmds
@@ -18,10 +32,41 @@ rmds_terms <- function() {
 #'
 #' @export
 rmds_fetch <- function(terms = rmds_terms(), board = "rmds") {
-  if (!board %in% pins::board_list())
-    pins::board_register("github", board, repo = "javierluraschi/rmds", branch = "datasets")
+  rmds_validate(board)
+  searched <- tryCatch(unique(pin_get("urls", board = board)$search), error = function(e) "")
 
   for (term in terms) {
+    if (term %in% searched) next
     github_fetch_urls(term, board)
   }
+}
+
+#' Post Process Rmds
+#'
+#' Process' urls stored int he "urls" pin and generatese a "rmds" pin with actual code.
+#'
+#' @export
+rmds_process <- function(board = "rmds") {
+  rmds_validate(board)
+  urls <- pin_get("urls", board = board)
+  rmds <- tryCatch(unique(pin_get("rmds", board = board)$search), error = function(e) {
+    data.frame(url = character(), code = character()) })
+
+  for (idx in 1:nrow(urls)) {
+    current <- urls[idx,]
+    if (current$url %in% rmds$url) next
+
+    url <- structure(url, class = current$source)
+    code <- process_rmd(url)
+
+    break;
+  }
+}
+
+process_rmd <- function(url) {
+  UseMethod("process_rmd")
+}
+
+process_rmd.github <- function(url) {
+  ""
 }
