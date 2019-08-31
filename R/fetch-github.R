@@ -76,7 +76,7 @@ code_is_valid <- function(code) {
 }
 
 process_rmd.github <- function(url) {
-  response <- httr::GET(url)
+  response <- httr::GET(url, github_headers())
   if (httr::http_error(response)) warning("Failed to download: ", url)
 
   content <- httr::content(response)
@@ -87,7 +87,7 @@ process_rmd.github <- function(url) {
     rmd <- base64enc::base64decode(content$content) %>% rawToChar()
   }
   else if (!is.null(download_url)) {
-    response <- httr::GET(download_url)
+    response <- httr::GET(download_url, github_headers())
     if (httr::http_error(response)) warning("Failed to download: ", download_url)
     else rmd <- httr::content(response)
   }
