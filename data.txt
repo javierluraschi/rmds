@@ -3,3 +3,8 @@
   rows: 21467
   cols: 3
   type: table
+- path: rmds
+  name: rmds
+  rows: 10
+  cols: 2
+  type: table
