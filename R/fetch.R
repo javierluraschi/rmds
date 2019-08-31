@@ -50,23 +50,27 @@ rmds_process <- function(board = "rmds") {
   rmds_validate(board)
   urls <- pin_get("urls", board = board)
   rmds <- tryCatch(unique(pin_get("rmds", board = board)$search), error = function(e) {
-    data.frame(url = character(), code = character()) })
+    data.frame(url = character(), code = character(), stringsAsFactors = FALSE) })
 
   for (idx in 1:nrow(urls)) {
+    if (idx %% 10 == 0) message("Processing ", idx, "/", nrow(urls))
+    if (idx %% 100 == 0) pins::pin(rmds, "rmds", board = board)
+
     current <- urls[idx,]
     if (current$url %in% rmds$url) next
+    url <- current$url
 
     url <- structure(url, class = current$source)
-    code <- process_rmd(url)
+    result <- process_rmd(url)
 
-    break;
+    rmds <- rbind(rmds, result)
   }
+
+  pins::pin(rmds, "rmds", board = board)
+
+  rmds
 }
 
 process_rmd <- function(url) {
   UseMethod("process_rmd")
-}
-
-process_rmd.github <- function(url) {
-  ""
 }

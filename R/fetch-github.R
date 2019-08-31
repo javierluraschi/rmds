@@ -2,6 +2,10 @@ github_headers <- function(board) {
   httr::add_headers(Authorization = paste("token", Sys.getenv("GITHUB_PAT")))
 }
 
+github_max_poll <- function(response) {
+  60 * 60 / as.integer(response$headers$`x-ratelimit-limit`)
+}
+
 github_fetch_urls <- function(term, board) {
   message("Processing ", term)
 
@@ -22,7 +26,7 @@ github_fetch_urls <- function(term, board) {
   urls <- c()
 
   for (page_current in page_start:page_end) {
-    max_poll <- 60 * 60 / as.integer(response$headers$`x-ratelimit-limit`)
+    max_poll <- github_max_poll(response)
     message("Processing page ", page_current, "/", page_end, " wait (", max_poll, "s)", " rates (",
             response$headers$`x-ratelimit-limit`, ",",
             response$headers$`x-ratelimit-remaining`, ",",
@@ -65,4 +69,52 @@ github_update_urls <- function(term, urls, board) {
   index_new <- unique(rbind(index_old, index_new))
 
   pins::pin(index_new, "urls", board = board)
+}
+
+code_is_valid <- function(code) {
+  tryCatch({ parse(text = code) ; TRUE }, error = function(e) FALSE)
+}
+
+process_rmd.github <- function(url) {
+  response <- httr::GET(url)
+  if (httr::http_error(response)) warning("Failed to download: ", url)
+
+  content <- httr::content(response)
+  download_url <- content$download_url
+  rmd <- NULL
+
+  if (!is.null(content$content)) {
+    rmd <- base64enc::base64decode(content$content) %>% rawToChar()
+  }
+  else if (!is.null(download_url)) {
+    response <- httr::GET(download_url)
+    if (httr::http_error(response)) warning("Failed to download: ", download_url)
+    else rmd <- httr::content(response)
+  }
+  else {
+    warning("Failed to download: ", url)
+  }
+
+  code <- ""
+  if (!is.null(rmd) && nchar(rmd) > 0) {
+    code <- rmd
+
+    # extract chunks
+    code <- regmatches(code, gregexpr("```\\{r[^`]+```", code))[[1]]
+
+    # extract code
+    code <- lapply(code, function(e) gsub("```\\{r[^\n]+\n|```", "", e))
+
+    # keep only code that parses
+    code <- Filter(function(e) code_is_valid(e), code)
+
+    # collapse
+    code <- paste(code, collapse = "\n")
+  }
+
+  if (is.null(download_url)) download_url <- as.character(url)
+
+  Sys.sleep(github_max_poll(response))
+
+  data.frame(url = download_url, code = code, stringsAsFactors = FALSE)
 }
