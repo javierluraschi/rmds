@@ -1,7 +1,7 @@
 path:
-- data.csv
+- https://github.com/javierluraschi/rmds/releases/download/rmds-5fe739e/data.csv
 - data.rds
-rows: 10
+rows: 18299
 cols: 2
 columns:
   url: character
