@@ -116,5 +116,5 @@ process_rmd.github <- function(url) {
 
   Sys.sleep(github_max_poll(response))
 
-  data.frame(url = download_url, code = code, stringsAsFactors = FALSE)
+  data.frame(source = "github", url = url, code = code, stringsAsFactors = FALSE)
 }
