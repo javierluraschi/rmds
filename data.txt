@@ -5,7 +5,7 @@
   type: table
 - path: rmds
   name: rmds
-  rows: 10
+  rows: 18299
   cols: 2
   type: table
 - path: iris
