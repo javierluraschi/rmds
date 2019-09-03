@@ -50,7 +50,7 @@ rmds_process <- function(board = "rmds") {
   rmds_validate(board)
   urls <- pin_get("urls", board = board)
   rmds <- tryCatch(unique(pin_get("rmds", board = board)), error = function(e) {
-    data.frame(url = character(), code = character(), stringsAsFactors = FALSE) })
+    data.frame(url = character(), code = character(), source = character(), stringsAsFactors = FALSE) })
 
   for (idx in 1:nrow(urls)) {
     if (idx %% 10 == 0) message("Processing ", idx, "/", nrow(urls))
