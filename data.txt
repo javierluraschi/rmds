@@ -1,9 +1,11 @@
 - path: urls
+  description: A table or raw urls that may contain R Markdown documents.
   name: urls
   rows: 21467
   cols: 3
   type: table
 - path: rmds
+  description: A table of R Markdown documents.
   name: rmds
   rows: 17444
   cols: 3
