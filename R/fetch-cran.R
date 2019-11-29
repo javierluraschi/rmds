@@ -113,7 +113,7 @@ cran_find_resources <- function(sc,
   context <- list(
     cran_process_packages = cran_process_packages,
     cran_process_package = cran_process_package,
-    cran_process_file = cran_process_file
+    cran_process_rd = cran_process_rd
   )
 
   packages %>% spark_apply(
