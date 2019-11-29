@@ -54,7 +54,7 @@ rmds_process <- function(board = "rmds") {
 
   for (idx in 1:nrow(urls)) {
     if (idx %% 10 == 0) message("Processing ", idx, "/", nrow(urls))
-    if (idx %% 100 == 0) pins::pin(rmds, "rmds", board = board)
+    if (idx %% 1000 == 0) pins::pin(rmds, "rmds", board = board)
 
     current <- urls[idx,]
     if (current$url %in% rmds$url) next
