@@ -1,0 +1,22 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+To retrieve the Rmds dataset,
+
+```{r eval=FALSE}
+pins::pin("https://github.com/javierluraschi/rmds/blob/datasets/urls/data.csv")
+```
+
+To use all the datasets,
+
+```{r eval=FALSE}
+pins::board_register_datatxt("rmds", "https://raw.githubusercontent.com/javierluraschi/rmds/datasets/data.txt")
+
+# list of urls to raw rmds
+pins::pin_get("urls")
+
+# a list of rmds with code
+pins::pin_get("rmds")
+```
