@@ -84,7 +84,7 @@ process_rmd.github <- function(url) {
   rmd <- NULL
 
   if (!is.null(content$content)) {
-    rmd <- base64enc::base64decode(content$content) %>% rawToChar()
+    rmd <- tryCatch(base64enc::base64decode(content$content) %>% rawToChar(), error = function(e) NULL)
   }
   else if (!is.null(download_url)) {
     response <- httr::GET(download_url, github_headers())
