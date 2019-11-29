@@ -87,7 +87,7 @@ cran_process_packages <- function(packages) {
       warning(paste("error", package, sep = ":"))
     })
 
-    new_result <- data.frame(source = "packages", url = package, code = new_code, stringsAsFactors = FALSE)
+    new_result <- data.frame(source = "packages", url = paste0("package://", package), code = new_code, stringsAsFactors = FALSE)
 
     results <- rbind(
       results,
@@ -122,7 +122,7 @@ cran_find_resources <- function(sc,
       cran_process_packages(df$package)
     },
     context = context,
-    columns = list(name = "character", description = "character", rows = "integer", cols = "integer", class = "character"),
+    columns = list(source = "character", url = "character", code = "character"),
     name = "cran_resources")
 }
 
