@@ -12,11 +12,10 @@
 #   data <- cran_find_resources(sc, 10^3, 10^2)
 #   data <- cran_find_resources(sc, 10^5, 10^4)
 #
-#   cran_index <- data %>% collect()
+#   cran_code <- data %>% collect()
 #
 # Saving:
-#   cran_save_dataset(cran_index)
-#   cran_clean_dataset()
+#   cran_save_code(cran_code)
 
 cran_process_rd <- function(rd_data, collect = FALSE) {
   if ("Rd_tag" %in% names(attributes(rd_data)) && identical(attributes(rd_data)[["Rd_tag"]], "\\examples")) {
@@ -146,20 +145,10 @@ cran_find_config <- function(workers = 3, worker_cpus = 8) {
   config
 }
 
-cran_save_dataset <- function(cran_index) {
+cran_save_code <- function(cranfiles) {
   if (!dir.exists("data")) dir.create("data")
 
-  cranfiles <- dplyr::transmute(
-    cran_index,
-    package = gsub(":.*", "", name),
-    dataset = gsub(".*:", "", name),
-    description = description,
-    rows = rows,
-    cols = cols,
-    class = class
-  )
-
-  save(cranfiles, file = "data/cranfiles.rda")
+  save(cranfiles, file = "data/crancode.rda")
 }
 
 cran_clean_dataset <- function(cran_index) {
