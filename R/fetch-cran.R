@@ -53,7 +53,8 @@ cran_process_package <- function(package) {
       rd_data <- tools::parse_Rd(docs_path)
       code <- cran_process_rd(rd_data)
       split <- strsplit(code, "\n")[[1]]
-      paste(Filter(function(e) !grepl("^ ?#.*", e), split), collapse = "\n") %>% cat()
+      only_code <- gsub(" +", "", Filter(function(e) !grepl("^ ?#.*", e), split))
+      only_code[!grepl("^$", only_code)]
     }, error = function(e) {
       ""
     })
