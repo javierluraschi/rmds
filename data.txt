@@ -5,8 +5,6 @@
   cols: 3
   type: table
 - path: rmds
-  description: A table of R Markdown documents.
   name: rmds
-  rows: 17444
-  cols: 3
-  type: table
+  description: A collection of R code from notebooks and packages
+  type: default
