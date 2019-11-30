@@ -58,18 +58,14 @@ cran_process_package <- function(package) {
       ""
     })
 
-    results <- paste(
-      results,
-      new_result,
-      sep = ""
-    )
+    results <- c(results, new_result)
   }
 
   paste(
     "library(",
     package,
     ")\n",
-    results,
+    paste(results, collapse = "\n"),
     sep = ""
   )
 }
@@ -104,7 +100,7 @@ cran_find_resources <- function(sc,
 
   packages <- copy_to(
     sc,
-    data.frame(package = pkgnames[1:samples]),
+    data.frame(package = pkgnames[1:min(samples, length(pkgnames))]),
     repartition = ifelse(is.null(repartition), 0, repartition),
     overwrite = T)
 
