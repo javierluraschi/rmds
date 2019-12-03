@@ -19,13 +19,13 @@ code <- pins::pin_get("rmds", "https://raw.githubusercontent.com/javierluraschi/
 To reduce computation resources, start with a subset but skip this line otherwise,
 
 ```{r}
-code <- code[1:10,]
+# code <- code[1:10,]
 ```
 
 First lets split between test and validation,
 
 ```{r}
-index <- sample(1:2, size = nrow(code), replace = TRUE, prob = c(.8, .2))
+index <- sample(1:2, size = nrow(code), replace = TRUE, prob = c(.90, .10))
 train <- code[index == 1,]
 test <- code[index == 2,]
 ```
@@ -81,23 +81,27 @@ checks_count <- length(test_tokens)-ngram_size
 
 token_incorrect <- c()
 token_correct <- c()
+start_time <- Sys.time()
 
 for (i in 1:checks_count) {
+  # Cap test time to 5 minutes
+  if (Sys.time() > start_time + 60 * 5) break
+  
   current_ngram <- test_tokens[i:(i+ngram_size-2)]
   current_text <- paste(current_ngram[1:ngram_size-1], collapse = " ")
   
   matches <- stringr::str_starts(ngram_table$ngrams, stringr::fixed(current_text))
   best <- ngram_table[matches,]$ngrams
-  best <- if (length(best) == 0) "<na>" else best[[1]]
+  best <- if (length(best) == 0) "<na>" else best[1:10]
   
   correct_match <- paste0(current_text, " ", test_tokens[i+ngram_size-1], " ")
-  if (best == correct_match) {
+  if (correct_match %in% best) {
     match_count <- match_count + 1
     
-    token_correct <- c(token_correct, best)
+    if (length(token_correct) < 1000) token_correct <- c(token_correct, best)
   }
   else {
-    token_incorrect <- c(token_incorrect, best)
+    if (length(token_incorrect) < 1000) token_incorrect <- c(token_incorrect, best)
   }
 }
 
