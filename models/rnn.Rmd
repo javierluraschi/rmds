@@ -1,0 +1,21 @@
+---
+title: "R Code - RNN"
+output:
+  github_document:
+    fig_width: 8
+    fig_height: 4
+---
+
+This R notebook makes use of RNNs and TensorFlow to model the R code dataset from this repo.
+
+We will first load the R code dataset,
+
+```{r}
+library(magrittr)
+
+code <- pins::pin_get("rmds", "https://raw.githubusercontent.com/javierluraschi/rmds/datasets/")
+```
+
+```{r}
+
+```
