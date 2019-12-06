@@ -16,6 +16,59 @@ library(magrittr)
 code <- pins::pin_get("rmds", "https://raw.githubusercontent.com/javierluraschi/rmds/datasets/")
 ```
 
-```{r}
+To reduce computation resources, start with a subset but skip this line otherwise,
 
+```{r}
+# code <- code[1:10,]
+```
+
+First lets split between test and validation,
+
+```{r}
+index <- sample(1:2, size = nrow(code), replace = TRUE, prob = c(.90, .10))
+train <- code[index == 1,]
+test <- code[index == 2,]
+```
+
+We will then manually tokenize the code in a format usable by the `ngram` package,
+
+```{r}
+code_tokenize <- function(code) {
+  code <- paste0(" <sof> ", paste(code, collapse = " <eof> "), " <eof> ")
+  code <- gsub("\n", " <eol> ", code, fixed = TRUE)
+  code <- gsub("\t", " ", code, fixed = TRUE)
+  code <- gsub(",", " , ", code, fixed = TRUE)
+  code <- gsub("(", " ( ", code, fixed = TRUE)
+  code <- gsub(")", " ) ", code, fixed = TRUE)
+  code <- gsub("[", " [ ", code, fixed = TRUE)
+  code <- gsub("]", " ] ", code, fixed = TRUE)
+  code <- gsub("$", " $ ", code, fixed = TRUE)
+  code <- gsub("::", " :: ", code, fixed = TRUE)
+  gsub("=", " = ", code, fixed = TRUE)
+}
+
+train_code <- code_tokenize(train$code)
+test_code <- code_tokenize(test$code)
+```
+
+Install TensorFlow and related packages, if needed,
+
+```{r}
+# install.packages(c("tensorflow", "keras", "tfdatasets"))
+# tensorflow::install_tensorflow()
+```
+
+First we will load the dataset,
+
+```{r}
+library(keras)
+
+tokenizer <- text_tokenizer(num_words = 10,
+                            lower = FALSE,
+                            split = " ",
+                            filters = "",
+                            char_level = FALSE,
+                            oov_token = "<na>")
+
+texts_to_sequences_generator(tokenizer, train_code)
 ```
